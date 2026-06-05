@@ -1,0 +1,13 @@
+# Backend Framework & Server
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+
+# Database ORM & Drivers (Async)
+sqlalchemy>=2.0.0
+asyncpg>=0.28.0
+
+# Data Simulation (Script giả lập)
+faker>=19.0.0
+
+# Tiện ích bổ sung (Khuyến nghị cho quản lý cấu hình)
+pydantic-settings>=2.0.0

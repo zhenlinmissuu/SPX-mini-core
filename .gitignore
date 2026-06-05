@@ -1,0 +1,19 @@
+# Môi trường ảo Python (Virtual Environment)
+venv/
+ENV/
+env/
+.venv/
+
+# Bộ nhớ đệm Python (Byte-compiled / optimized / DLL cookies)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# File cấu hình chứa mật khẩu và thông tin nhạy cảm
+.env
+
+# File cấu hình cá nhân của IDE (VS Code)
+.vscode/
+
+# Thư mục dữ liệu sinh ra bởi Docker Postgres (nếu bạn map volume local)
+# postgres_data/ (Bỏ dấu thăng nếu bạn cấu hình lưu data ngay trong thư mục dự án)
