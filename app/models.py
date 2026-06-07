@@ -19,7 +19,7 @@ class user(Base):
 
     user_id: Mapped[int] = mapped_column(primary_key=True)
     user_name: Mapped[str] = mapped_column(String(50), nullable=False)
-    user_phone: Mapped[str] = mapped_column(String(11), unique=True)
+    user_phone: Mapped[str] = mapped_column(String(11), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     user_role: Mapped[UserRole] = mapped_column(String(10), nullable=False)
 
@@ -40,8 +40,8 @@ class hubs(Base):
     province_id: Mapped[int] = mapped_column(ForeignKey('provinces.province_id'))
     district_id: Mapped[int] = mapped_column(ForeignKey('districts.district_id'))
 
-#Oders
-class OderStatus(str, PyEnum):
+#Orders
+class OrderStatus(str, PyEnum):
     PENDING = 'pending'
     COLLECTED = 'collected'
     IN_TRANSIT = 'in_transit'
@@ -107,17 +107,31 @@ class trips_detail(Base):
     sequence: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[LoadStatus] = mapped_column(String(10), nullable=False)
 
+class oder_tracking_logs(Base):
+    log_id: Mapped[int]
+    status: Mapped[OderStatus] = mapped_column(String(10), nullable=False)
+    description: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    #Foreign Keys
+    order_key: Mapped[int] = mapped_column(ForeignKey('orders.order_key'))
+    hub_id: Mapped[int] = mapped_column(ForeignKey('hubs.hub_id'))
+
 
 #Miscellaneous
 class provinces(Base):
     __tablename__ = 'provinces'
 
     province_id: Mapped[int] = mapped_column(primary_key=True)
+    province_name: Mapped[str] = mapped_column(String(50), nullable=False)
+
 
 class districts(Base):
     __tablename__ = 'districts'
 
     district_id: Mapped[int] = mapped_column(primary_key=True)
+    district_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    province_id: Mapped[int] = mapped_column(ForeignKey('provinces.province_id'))
 
 class Vehicles(Base):
     vehicle_id: Mapped[int] = mapped_column(primary_key=True)
