@@ -2,7 +2,7 @@
 import os
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
-# Chuỗi kết nối sử dụng tài khoản và DB mới tinh trong file .env sạch của bạn
+# Chuỗi kết nối sử dụng tài khoản và DB mới tinh trong file .env
 DATABASE_URL = "postgresql+asyncpg://spx_admin:1234@localhost:5432/spx_mini_db"
 
 # Khởi tạo Async Engine cho dự án hiện tại

@@ -51,7 +51,7 @@ class OrderStatus(str, PyEnum):
     RETURNING = 'returning'
     RETURNED = 'returned'
 
-class oders(Base):
+class orders(Base):
     order_id: Mapped[int] = mapped_column(primary_key=True)
     tracking_number: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
     receiver_name: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -60,7 +60,7 @@ class oders(Base):
     weight: Mapped[int] = mapped_column(Integer, nullable=False) #grams
     cod: Mapped[int] = mapped_column(Integer, nullable=False) #Vnd
     fee: Mapped[int] = mapped_column(Integer, nullable=False) #Vnd
-    status: Mapped[OderStatus] = mapped_column(String(10), nullable=False)
+    status: Mapped[OrderStatus] = mapped_column(String(10), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -89,10 +89,11 @@ class trips(Base):
     trip_number: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
     type: Mapped[TripType] = mapped_column(String(10), nullable=False)
     status: Mapped[TripStatus] = mapped_column(String(10), nullable=False)
-
+    start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    arrived_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=None)
+    
     
     #Foreign Keys
-    oder_id: Mapped[int] = mapped_column(ForeignKey('oders.order_id'))
     vehicle_id: Mapped[int] = mapped_column(ForeignKey('vehicles.vehicle_id'))
     driver_id: Mapped[int] = mapped_column(ForeignKey('users.user_id'))
 
@@ -102,33 +103,31 @@ class LoadStatus:
     CANCELLED = 'cancelled'
 
 class trips_detail(Base):
+    trip_log_id: Mapped[int] = mapped_column(primary_key=True)
     trip_id: Mapped[int] = mapped_column(ForeignKey('trips.trip_id'), primary_key=True)
-    order_id: Mapped[int] = mapped_column(ForeignKey('oders.order_id'), primary_key=True)
+    order_id: Mapped[int] = mapped_column(ForeignKey('orders.order_id'), primary_key=True)
     sequence: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[LoadStatus] = mapped_column(String(10), nullable=False)
+    note: Mapped[str] = mapped_column(String(255), nullable=False)
 
-class oder_tracking_logs(Base):
-    log_id: Mapped[int]
-    status: Mapped[OderStatus] = mapped_column(String(10), nullable=False)
+class order_tracking_logs(Base):
+    order_log_id: Mapped[int]
+    status: Mapped[OrderStatus] = mapped_column(String(10), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     #Foreign Keys
-    order_key: Mapped[int] = mapped_column(ForeignKey('orders.order_key'))
+    order_id: Mapped[int] = mapped_column(ForeignKey('orders.order_id'))
     hub_id: Mapped[int] = mapped_column(ForeignKey('hubs.hub_id'))
 
 
 #Miscellaneous
 class provinces(Base):
-    __tablename__ = 'provinces'
-
     province_id: Mapped[int] = mapped_column(primary_key=True)
     province_name: Mapped[str] = mapped_column(String(50), nullable=False)
 
 
 class districts(Base):
-    __tablename__ = 'districts'
-
     district_id: Mapped[int] = mapped_column(primary_key=True)
     district_name: Mapped[str] = mapped_column(String(50), nullable=False)
     province_id: Mapped[int] = mapped_column(ForeignKey('provinces.province_id'))
