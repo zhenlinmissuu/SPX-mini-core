@@ -1,21 +1,25 @@
-# app/database.py
 import os
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Chuỗi kết nối sử dụng tài khoản và DB mới tinh trong file .env
-DATABASE_URL = "postgresql+asyncpg://spx_admin:1234@localhost:5432/spx_mini_db"
+load_dotenv()
 
-# Khởi tạo Async Engine cho dự án hiện tại
-engine = create_async_engine(
-    DATABASE_URL,
-    echo=False,
-    pool_size=20,         # Tối ưu số lượng kết nối đồng thời cho script sinh 50k đơn hàng
-    max_overflow=10
-)
+USER = os.getenv("DB_USER")
+PASSWORD = os.getenv("DB_PASSWORD")
+HOST = os.getenv("DB_HOST")
+PORT = os.getenv("DB_PORT")
+NAME = os.getenv("DB_NAME")
 
-AsyncSessionLocal = async_sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
+SQLALCHEMY_DATABASE_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}"
 
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

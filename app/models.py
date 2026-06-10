@@ -1,4 +1,5 @@
 from datetime import datetime
+from app.database import Base
 from enum import Enum as PyEnum
 from typing import List, Optional
 from sqlalchemy import ForeignKey, String, Integer, DateTime, Enum, func
@@ -52,6 +53,8 @@ class OrderStatus(str, PyEnum):
     RETURNED = 'returned'
 
 class orders(Base):
+    __tablename__ = 'orders'
+
     order_id: Mapped[int] = mapped_column(primary_key=True)
     tracking_number: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
     receiver_name: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -85,6 +88,8 @@ class TripType(str, PyEnum):
     DELIVERY = 'delivery'
 
 class trips(Base):
+    __tablename__ = 'trips'
+
     trip_id: Mapped[int] = mapped_column(primary_key=True)
     trip_number: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
     type: Mapped[TripType] = mapped_column(String(10), nullable=False)
@@ -103,6 +108,8 @@ class LoadStatus:
     CANCELLED = 'cancelled'
 
 class trips_detail(Base):
+    __tablename__ = 'trips_detail'
+
     trip_log_id: Mapped[int] = mapped_column(primary_key=True)
     trip_id: Mapped[int] = mapped_column(ForeignKey('trips.trip_id'), primary_key=True)
     order_id: Mapped[int] = mapped_column(ForeignKey('orders.order_id'), primary_key=True)
@@ -111,7 +118,9 @@ class trips_detail(Base):
     note: Mapped[str] = mapped_column(String(255), nullable=False)
 
 class order_tracking_logs(Base):
-    order_log_id: Mapped[int]
+    __tablename__ = 'order_tracking_logs'
+
+    order_log_id: Mapped[int] = mapped_column(primary_key=True)
     status: Mapped[OrderStatus] = mapped_column(String(10), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -123,16 +132,22 @@ class order_tracking_logs(Base):
 
 #Miscellaneous
 class provinces(Base):
+    __tablename__ = 'provinces'
+
     province_id: Mapped[int] = mapped_column(primary_key=True)
     province_name: Mapped[str] = mapped_column(String(50), nullable=False)
 
 
 class districts(Base):
+    __tablename__ = 'districts'
+
     district_id: Mapped[int] = mapped_column(primary_key=True)
     district_name: Mapped[str] = mapped_column(String(50), nullable=False)
     province_id: Mapped[int] = mapped_column(ForeignKey('provinces.province_id'))
 
 class Vehicles(Base):
+    __tablename__ = 'vehicles'
+
     vehicle_id: Mapped[int] = mapped_column(primary_key=True)
     vehicle_name: Mapped[str] = mapped_column(String(50), nullable=False)
     plate_number: Mapped[str] = mapped_column(String(10), unique=True, nullable=False)

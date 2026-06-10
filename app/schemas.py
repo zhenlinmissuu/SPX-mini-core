@@ -100,13 +100,15 @@ class OrderBase(BaseModel):
     receiver_address: str = Field(..., max_length=100, description="Địa chỉ người nhận")
     province_name: str = Field(..., max_length=50, description="Tên tỉnh")
     district_name: str = Field(..., max_length=50, description="Tên quận/huyện")
+    
     weight: int = Field(..., description="Trọng lượng đơn hàng")
     cod: int = Field(..., description="Tiền COD")
     origin_hub_id: int = Field(..., description="ID kho xuất phát")
-    created_at = datetime.now()
+    created_at: datetime = Field(default_factory=datetime.now)
 
 class OrderCreate(OrderBase):
     pass
+
 class OrderResponse(OrderBase):
     order_id: int = Field(..., description="ID của đơn hàng")
     tracking_number: str = Field(..., max_length=20, description="Số vận đơn")
@@ -143,7 +145,7 @@ class TripResponse(TripBase):
     trip_id: int = Field(..., description="ID của chuyến đi")
     trip_number: str = Field(..., max_length=20, description="Số chuyến đi")
 
-class LoadStatus: 
+class LoadStatus(str, PyEnum): 
     LOADED = 'loaded'
     DELIVERED = 'delivered'
     CANCELLED = 'cancelled'
