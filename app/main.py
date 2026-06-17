@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
+from routers import users
 
 import models, schemas
 from database import SessionLocal, engine
@@ -15,3 +16,6 @@ def get_db():
         yield db
     finally:
         db.close()
+
+app.include_router(users.router)
+app.include_router(users.router)

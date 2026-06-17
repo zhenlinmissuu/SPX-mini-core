@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.database import Base
+from database import Base
 from enum import Enum as PyEnum
 from typing import List, Optional
 from sqlalchemy import ForeignKey, String, Integer, DateTime, Enum, func
@@ -43,27 +43,29 @@ class hubs(Base):
 
 #Orders
 class OrderStatus(str, PyEnum):
+    PICKED_UP = 'picked_up'
     PENDING = 'pending'
-    COLLECTED = 'collected'
-    IN_TRANSIT = 'in_transit'
     DELIVERING = 'delivering'
     DELIVERED = 'delivered'
     CANCELLED = 'cancelled'
-    RETURNING = 'returning'
-    RETURNED = 'returned'
 
 class orders(Base):
     __tablename__ = 'orders'
 
     order_id: Mapped[int] = mapped_column(primary_key=True)
-    tracking_number: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+
+    sender_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    sender_phone: Mapped[str] = mapped_column(String(11), nullable=False)
+    sender_address: Mapped[str] = mapped_column(String(100), nullable=False)
+
     receiver_name: Mapped[str] = mapped_column(String(50), nullable=False)
     receiver_phone: Mapped[str] = mapped_column(String(11), nullable=False)
     recerver_address: Mapped[str] = mapped_column(String(100), nullable=False)
+
     weight: Mapped[int] = mapped_column(Integer, nullable=False) #grams
     cod: Mapped[int] = mapped_column(Integer, nullable=False) #Vnd
     fee: Mapped[int] = mapped_column(Integer, nullable=False) #Vnd
-    status: Mapped[OrderStatus] = mapped_column(String(10), nullable=False)
+    status: Mapped[OrderStatus] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -71,15 +73,18 @@ class orders(Base):
     #Foreign Keys
     origin_hub_id: Mapped[int] = mapped_column(ForeignKey('hubs.hub_id'))
     destination_hub_id: Mapped[int] = mapped_column(ForeignKey('hubs.hub_id'))
-    province_id: Mapped[int] = mapped_column(ForeignKey('provinces.province_id'))
-    district_id: Mapped[int] = mapped_column(ForeignKey('districts.district_id'))
+
+    sender_province_id: Mapped[int] = mapped_column(ForeignKey('provinces.province_id'))
+    sender_district_id: Mapped[int] = mapped_column(ForeignKey('districts.district_id'))
+    receiver_province_id: Mapped[int] = mapped_column(ForeignKey('provinces.province_id'))
+    receiver_district_id: Mapped[int] = mapped_column(ForeignKey('districts.district_id'))
+
+    trip_id: Mapped[int] = mapped_column(ForeignKey('trips.trip_id'))
 
 #Trips
 class TripStatus(str, PyEnum):
-    PLANNED = 'planned'
-    DEPARTED = 'departed'
-    ARRIVED = 'arrived'
-    COMPLETED = 'completed'
+    ONGOING = 'ongoing',
+    COMPLETED = 'completed',
     CANCELLED = 'cancelled'
 
 class TripType(str, PyEnum):
@@ -87,12 +92,17 @@ class TripType(str, PyEnum):
     PICKUP = 'pickup'
     DELIVERY = 'delivery'
 
+class LoadStatus: 
+    LOADED = 'loaded'
+    DELIVERED = 'delivered'
+    CANCELLED = 'cancelled'
+
 class trips(Base):
     __tablename__ = 'trips'
 
     trip_id: Mapped[int] = mapped_column(primary_key=True)
-    trip_number: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
-    type: Mapped[TripType] = mapped_column(String(10), nullable=False)
+    trip_number: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    type: Mapped[TripType] = mapped_column(String(20), nullable=False)
     status: Mapped[TripStatus] = mapped_column(String(10), nullable=False)
     start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     arrived_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=None)
@@ -102,17 +112,12 @@ class trips(Base):
     vehicle_id: Mapped[int] = mapped_column(ForeignKey('vehicles.vehicle_id'))
     driver_id: Mapped[int] = mapped_column(ForeignKey('users.user_id'))
 
-class LoadStatus: 
-    LOADED = 'loaded'
-    DELIVERED = 'delivered'
-    CANCELLED = 'cancelled'
-
 class trips_detail(Base):
     __tablename__ = 'trips_detail'
 
     trip_log_id: Mapped[int] = mapped_column(primary_key=True)
-    trip_id: Mapped[int] = mapped_column(ForeignKey('trips.trip_id'), primary_key=True)
-    order_id: Mapped[int] = mapped_column(ForeignKey('orders.order_id'), primary_key=True)
+    trip_id: Mapped[int] = mapped_column(ForeignKey('trips.trip_id'), nullable=False)
+    order_id: Mapped[int] = mapped_column(ForeignKey('orders.order_id'), nullable=False)
     sequence: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[LoadStatus] = mapped_column(String(10), nullable=False)
     note: Mapped[str] = mapped_column(String(255), nullable=False)
