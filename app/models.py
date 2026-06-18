@@ -60,7 +60,7 @@ class orders(Base):
 
     receiver_name: Mapped[str] = mapped_column(String(50), nullable=False)
     receiver_phone: Mapped[str] = mapped_column(String(11), nullable=False)
-    recerver_address: Mapped[str] = mapped_column(String(100), nullable=False)
+    receiver_address: Mapped[str] = mapped_column(String(100), nullable=False)
 
     weight: Mapped[int] = mapped_column(Integer, nullable=False) #grams
     cod: Mapped[int] = mapped_column(Integer, nullable=False) #Vnd
@@ -79,12 +79,12 @@ class orders(Base):
     receiver_province_id: Mapped[int] = mapped_column(ForeignKey('provinces.province_id'))
     receiver_district_id: Mapped[int] = mapped_column(ForeignKey('districts.district_id'))
 
-    trip_id: Mapped[int] = mapped_column(ForeignKey('trips.trip_id'))
+    trip_id: Mapped[int] = mapped_column(ForeignKey('trips.trip_id'), nullable=True)
 
 #Trips
 class TripStatus(str, PyEnum):
-    ONGOING = 'ongoing',
-    COMPLETED = 'completed',
+    ONGOING = 'ongoing'
+    COMPLETED = 'completed'
     CANCELLED = 'cancelled'
 
 class TripType(str, PyEnum):
@@ -92,7 +92,7 @@ class TripType(str, PyEnum):
     PICKUP = 'pickup'
     DELIVERY = 'delivery'
 
-class LoadStatus: 
+class LoadStatus(str, PyEnum): 
     LOADED = 'loaded'
     DELIVERED = 'delivered'
     CANCELLED = 'cancelled'
@@ -105,7 +105,7 @@ class trips(Base):
     type: Mapped[TripType] = mapped_column(String(20), nullable=False)
     status: Mapped[TripStatus] = mapped_column(String(10), nullable=False)
     start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    arrived_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=None)
+    arrived_time: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), default=None, nullable=True)
     
     
     #Foreign Keys

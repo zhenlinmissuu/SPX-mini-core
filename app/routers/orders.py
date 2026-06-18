@@ -27,7 +27,7 @@ def create_order(order: schemas.OrderCreate,db: Session = Depends(get_db)):
     
     new_order = models.orders(
         **order.model_dump(),
-        shipping_fee=fee,
+        fee=fee,
         origin_hub_id=s_dist.hub_id,
         destination_hub_id=r_dist.hub_id,
         status=OrderStatus.PENDING,
@@ -39,7 +39,7 @@ def create_order(order: schemas.OrderCreate,db: Session = Depends(get_db)):
     
     return new_order
 
-@router.get("/", response_model=schemas.OrderResponse)
+@router.get("/", response_model=list[schemas.OrderResponse])
 def get_orders (db: Session = Depends(get_db)):
     return db.query(models.orders).all()
 

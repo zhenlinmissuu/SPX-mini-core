@@ -89,11 +89,10 @@ class OrderBase(BaseModel):
     sender_name: str = Field(..., max_length=50, description="Tên người gửi")
     sender_phone: str = Field(..., max_length=11, description="Số điện thoại người gửi")
     sender_address: str = Field(..., max_length=100, description="Địa chỉ người gửi")
+
     receiver_name: str = Field(..., max_length=50, description="Tên người nhận")
     receiver_phone: str = Field(..., max_length=11, description="Số điện thoại người nhận")
     receiver_address: str = Field(..., max_length=100, description="Địa chỉ người nhận")
-    province_name: str = Field(..., max_length=50, description="Tên tỉnh")
-    district_name: str = Field(..., max_length=50, description="Tên quận/huyện")
     
     sender_district_id: int = Field(..., description="ID huyện người gửi")
     sender_province_id: int = Field(..., description="ID tỉnh người gửi")
@@ -115,8 +114,6 @@ class OrderUpdate(BaseModel):
     receiver_name: Optional[str] = Field(None, max_length=50, description="Tên người nhận")
     receiver_phone: Optional[str] = Field(None, max_length=11, description="Số điện thoại người nhận")
     receiver_address: Optional[str] = Field(None, max_length=100, description="Địa chỉ người nhận")
-    province_name: Optional[str] = Field(None, max_length=50, description="Tên tỉnh")
-    district_name: Optional[str] = Field(None, max_length=50, description="Tên quận/huyện")
     
     sender_district_id: Optional[int] = Field(None, description="ID huyện người gửi")
     sender_province_id: Optional[int] = Field(None, description="ID tỉnh người gửi")
