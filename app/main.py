@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
+import database
 from routers import users, orders, events, trips
 
 import models, schemas
@@ -15,14 +16,6 @@ models.Base.metadata.create_all(bind=engine)
 @app.on_event("startup")
 def startup_event():
     load_distance()
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 app.include_router(users.router)
 app.include_router(orders.router)

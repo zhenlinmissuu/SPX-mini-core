@@ -23,7 +23,7 @@ def create_order(order: schemas.OrderCreate,db: Session = Depends(get_db)):
     r_dist = db.query(models.hubs).filter(models.hubs.district_id == order.receiver_district_id).first()
 
     if not s_dist or not r_dist:
-        raise HTTPException(status_code=400, detail="Quận huyện không hợp lệ")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Quận huyện không hợp lệ")
     
     new_order = models.orders(
         **order.model_dump(),
