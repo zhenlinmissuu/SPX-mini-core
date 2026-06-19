@@ -1,11 +1,11 @@
 import hashlib
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-import models, schemas
+from app import models, schemas
 from datetime import datetime
 import uuid
-from models import OrderStatus, TripStatus, TripType, LoadStatus
-from database import get_db
+from app.models import OrderStatus, TripStatus, TripType, LoadStatus
+from app.database import get_db
 
 router = APIRouter(
     prefix="/trips",
@@ -36,12 +36,12 @@ def create_trip(trip: schemas.TripCreate, db: Session = Depends(get_db)):
                 note="Auto"
             )
             db.add(detail)
-        
+
         if trip.order_ids:
             db.query(models.orders).filter(models.orders.order_id.in_(trip.order_ids)).update(
                 {"status": "delivering"}, synchronize_session=False
             )
-        
+
         db.commit()
         return schemas.TripResponse(
             trip_id = new_trip.trip_id,

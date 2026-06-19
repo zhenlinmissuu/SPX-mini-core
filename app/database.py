@@ -5,11 +5,11 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
 
-USER = os.getenv("DB_USER")
-PASSWORD = os.getenv("DB_PASSWORD")
-HOST = os.getenv("DB_HOST")
-PORT = os.getenv("DB_PORT")
-NAME = os.getenv("DB_NAME")
+USER = os.getenv("POSTGRES_USER")
+PASSWORD = os.getenv("POSTGRES_PASSWORD")
+HOST = os.getenv("POSTGRES_HOST")
+PORT = os.getenv("POSTGRES_PORT")
+NAME = os.getenv("POSTGRES_DB")
 
 SQLALCHEMY_DATABASE_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}"
 

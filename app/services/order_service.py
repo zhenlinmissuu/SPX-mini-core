@@ -4,8 +4,8 @@ from pathlib import Path
 DISTANCE_MEMORY_CACHE = {}
 
 STATUS_TRANSITIONS = {
-    "pending": ["picked_up", "cancelled"],     
-    "picked_up": ["delivering"],               
+    "pending": ["picked_up", "cancelled"],
+    "picked_up": ["delivering"],
     "delivering": ["delivered", "cancelled"],
     "delivered": [],
     "cancelled": []
@@ -18,12 +18,12 @@ def load_distance():
     global DISTANCE_MEMORY_CACHE
 
     file_path = Path(__file__).parent / "provinces_distance.json"
-    
+
     if file_path.exists():
         with open(file_path, "r", encoding="utf-8") as f:
             raw_data = json.load(f)
             DISTANCE_MEMORY_CACHE = {
-                int(src): {int(dst): float(km) for dst, km in dst_maps.items()} 
+                int(src): {int(dst): float(km) for dst, km in dst_maps.items()}
                 for src, dst_maps in raw_data.items()
             }
         print(f">>> [SUCCESS] Đã nạp thành công ma trận khoảng cách từ: {file_path.name}")
@@ -35,10 +35,10 @@ def shipment_fee(
         sender_province_id: int,
         receiver_province_id: int,
         weight: int):
-    
+
     if sender_province_id == receiver_province_id:
         return 16500
-    
+
     sender_map = DISTANCE_MEMORY_CACHE.get(sender_province_id,{})
 
     distance_km = sender_map.get(receiver_province_id, 150)

@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
-import database
-from routers import users, orders, events, trips
+import app.database as database
+from app.routers import users, orders, events, trips
 
-import models, schemas
-from database import SessionLocal, engine
+from app import models, schemas
+from app.database import SessionLocal, engine
 
-from services.order_service import load_distance
+from app.services.order_service import load_distance
 
 app = FastAPI()
 

@@ -4,7 +4,7 @@ from app.database import engine, SessionLocal, Base
 from app.models import provinces, districts, hubs, Vehicles, HubStatus, user, UserRole
 
 def seed_data(db: Session):
-    # Dữ liệu tài xế mẫu
+
     print("Đang tạo dữ liệu Drivers (Nhân viên giao hàng)...")
     if not db.query(user).filter(user.user_role == UserRole.STAFF).first():
         for i in range(1, 21):
@@ -19,7 +19,7 @@ def seed_data(db: Session):
         db.flush()
         print("Đã tạo xong 20 tài xế mẫu!")
 
-    # Danh sách các tỉnh miền Bắc và một số quận/huyện tiêu biểu
+
     northern_provinces = {
         "Hà Nội": ["Quận Ba Đình", "Quận Hoàn Kiếm", "Quận Tây Hồ", "Quận Long Biên", "Quận Cầu Giấy", "Quận Đống Đa", "Quận Hai Bà Trưng", "Quận Hoàng Mai", "Quận Thanh Xuân", "Huyện Sóc Sơn", "Huyện Đông Anh", "Huyện Gia Lâm", "Huyện Nam Từ Liêm", "Huyện Bắc Từ Liêm"],
         "Hà Giang": ["Thành phố Hà Giang", "Huyện Đồng Văn", "Huyện Mèo Vạc", "Huyện Yên Minh", "Huyện Quản Bạ"],
@@ -48,15 +48,15 @@ def seed_data(db: Session):
         "Ninh Bình": ["Thành phố Ninh Bình", "Thành phố Tam Điệp", "Huyện Nho Quan", "Huyện Gia Viễn", "Huyện Hoa Lư"]
     }
 
-    # Các dòng xe tải/bán tải phổ biến
+
     vehicle_models = [
-        "Hyundai Porter 150", "Kia K200", "Isuzu QKR", "Hino XZU", 
-        "Thaco Towner", "Ford Ranger", "Toyota Hilux", "Mitsubishi Triton", 
+        "Hyundai Porter 150", "Kia K200", "Isuzu QKR", "Hino XZU",
+        "Thaco Towner", "Ford Ranger", "Toyota Hilux", "Mitsubishi Triton",
         "Suzuki Carry", "Dongben K9", "TATA Super Ace"
     ]
 
     try:
-        # Kiểm tra xem dữ liệu đã được seed chưa
+
         if db.query(provinces).first():
             print("Database đã có dữ liệu. Bỏ qua quá trình seed.")
             return
@@ -66,19 +66,19 @@ def seed_data(db: Session):
         for prov_name, dist_names in northern_provinces.items():
             new_prov = provinces(province_name=prov_name)
             db.add(new_prov)
-            db.flush() # Để lấy province_id ngay lập tức
+            db.flush()
 
             for dist_name in dist_names:
                 new_dist = districts(district_name=dist_name, province_id=new_prov.province_id)
                 db.add(new_dist)
                 all_districts_db.append(new_dist)
-        
-        db.flush() 
-        
+
+        db.flush()
+
         print("Đang tạo dữ liệu Hubs...")
         all_hubs_db = []
         for dist in all_districts_db:
-            # Đặt tên hub theo tên quận/huyện
+
             hub_name = f"Hub {dist.district_name}"
             hub_address = f"Trung tâm phân phối {dist.district_name}"
             new_hub = hubs(
@@ -90,25 +90,25 @@ def seed_data(db: Session):
             )
             db.add(new_hub)
             all_hubs_db.append(new_hub)
-            
+
         db.flush()
-        
+
         print("Đang tạo dữ liệu Vehicles (Phương tiện)...")
-        # Danh sách mã vùng biển số xe các tỉnh miền Bắc để random cho giống thật
+
         plate_prefixes = [29, 30, 15, 16, 90, 89, 34, 14, 98, 19, 21, 22, 23, 88, 99, 17, 18, 35]
-        
+
         for hub in all_hubs_db:
-            # Mỗi hub có từ 1-3 xe
+
             num_vehicles = random.randint(1, 3)
             for _ in range(num_vehicles):
                 v_model = random.choice(vehicle_models)
-                # Tạo biển số ngẫu nhiên VD: 29C-123.45
+
                 plate_prefix = random.choice(plate_prefixes)
                 plate_letter = random.choice(['C', 'D', 'H'])
                 plate_suffix = f"{random.randint(100, 999)}.{random.randint(10, 99)}"
                 plate_number = f"{plate_prefix}{plate_letter}-{plate_suffix}"
-                
-                # Kiểm tra trùng lặp biển số (phòng trường hợp hiếm gặp)
+
+
                 while db.query(Vehicles).filter(Vehicles.plate_number == plate_number).first():
                     plate_suffix = f"{random.randint(100, 999)}.{random.randint(10, 99)}"
                     plate_number = f"{plate_prefix}{plate_letter}-{plate_suffix}"
@@ -119,17 +119,17 @@ def seed_data(db: Session):
                     hub_id=hub.hub_id
                 )
                 db.add(new_vehicle)
-                
+
         db.commit()
         print("Quá trình seed dữ liệu hoàn tất thành công!")
-        
+
     except Exception as e:
         db.rollback()
         print(f"Lỗi trong quá trình seed dữ liệu: {e}")
 
 if __name__ == "__main__":
     print("Bắt đầu chạy seed dữ liệu...")
-    # Khởi tạo db session
+
     db = SessionLocal()
     try:
         seed_data(db)
